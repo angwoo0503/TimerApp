@@ -1,77 +1,69 @@
 import UIKit
 import AVFoundation
 
+
 class ViewController: UIViewController {
 
-    
     @IBOutlet weak var mainLabel: UILabel!
     
     @IBOutlet weak var slider: UISlider!
     
-    weak var timer: Timer?
-    
+    // 숫자(선택된 초)를 관리하기 위한 변수
     var number = 0
+    // 타이머 객체를 담기 위한 변수
+    var timer: Timer?
     
+    // 앱의 화면에 들어오면 처음 실행시키는 함수
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         configureUI()
-        
     }
-
+    
+    // UI셋팅 함수
     func configureUI() {
-        mainLabel.text = "초를 선택하세요."
+        mainLabel.text = "초를 선택하세요"
         slider.value = 0.5
     }
     
+    // 슬라이더 값이 바뀔때마다 호출되는 함수
     @IBAction func sliderChanged(_ sender: UISlider) {
-        // 슬라이더의 밸류값을 가지고 메인레이블의 텍스트를 세팅
-        let number = Int(sender.value * 60)
-        mainLabel.text = "\(number) 초"
+        let seconds = Int(sender.value * 60)
+        mainLabel.text = "\(seconds) 초"
+        number = seconds
     }
     
+    // 스타트버튼을 누르면 실행하는 함수
     @IBAction func startButtonTapped(_ sender: UIButton) {
-        // 1초씩 지나갈 때마다 무언가를 실행
         timer?.invalidate()
-        
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: <#T##(Timer) -> Void#>)
-        
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [self] _ in
-            // 반복을 하고 싶은 코드
-            
-            if number > 0 {
-                number -= 1
-                // 슬라이더도 줄여야 됨
-                // 레이블 표시도 다시 해줘야 됨
-                slider.value = Float(number) / Float(60)
-                mainLabel.text = "\(number) 초"
-                
-            } else {
-                number = 0
-                mainLabel.text = "초를 선택하세요."
-                
-                // 소리를 나게 해야됨
-                timer?.invalidate()
-                AudioServicesPlayAlertSound(SystemSoundID(1322))
-            }
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(doSomethingAfter1Second), userInfo: nil, repeats: true)
+    }
+    
+    
+    
+    // 다음 동작의 실행 함수
+    @objc func doSomethingAfter1Second() {
+        if number > 0 {
+            number -= 1
+            print(Float(number) / Float(60))
+            slider.value = Float(number) / Float(60)
+            mainLabel.text = "\(number) 초"
+        } else {
+            mainLabel.text = "초를 선택하세요"
+            number = 0
+            //print(number)
+            timer?.invalidate()
+            AudioServicesPlaySystemSound(SystemSoundID(1000))
         }
-        
-        
-        
     }
     
+    // 리셋버튼이 눌리면 실행되는 함수
     @IBAction func resetButtonTapped(_ sender: UIButton) {
-        // 초기화 셋팅
-        mainLabel.text = "초를 선택하세요."
-        slider.setValue(0.5, animated: true)
-        number = 0
         timer?.invalidate()
-        
-        // 슬라이더의 가운데 설정
-        // slider.setValue(0.5, animated: true)
-        
+        mainLabel.text = "초를 선택하세요"
+        slider.value = 0.5
+        number = 0
     }
     
-
 }
+
 
