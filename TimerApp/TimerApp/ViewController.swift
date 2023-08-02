@@ -1,4 +1,5 @@
 import UIKit
+import AVFoundation
 
 class ViewController: UIViewController {
 
@@ -25,14 +26,16 @@ class ViewController: UIViewController {
     
     @IBAction func sliderChanged(_ sender: UISlider) {
         // 슬라이더의 밸류값을 가지고 메인레이블의 텍스트를 세팅
-        let seconds = Int(slider.value * 60)
-        mainLabel.text = "\(seconds) 초"
-        number = seconds
+        let number = Int(sender.value * 60)
+        mainLabel.text = "\(number) 초"
     }
     
     @IBAction func startButtonTapped(_ sender: UIButton) {
         // 1초씩 지나갈 때마다 무언가를 실행
         timer?.invalidate()
+        
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: <#T##(Timer) -> Void#>)
+        
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [self] _ in
             // 반복을 하고 싶은 코드
             
@@ -48,10 +51,12 @@ class ViewController: UIViewController {
                 mainLabel.text = "초를 선택하세요."
                 
                 // 소리를 나게 해야됨
+                timer?.invalidate()
+                AudioServicesPlayAlertSound(SystemSoundID(1322))
             }
-            
-            
         }
+        
+        
         
     }
     
@@ -59,6 +64,9 @@ class ViewController: UIViewController {
         // 초기화 셋팅
         mainLabel.text = "초를 선택하세요."
         slider.setValue(0.5, animated: true)
+        number = 0
+        timer?.invalidate()
+        
         // 슬라이더의 가운데 설정
         // slider.setValue(0.5, animated: true)
         
